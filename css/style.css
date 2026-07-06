@@ -190,8 +190,15 @@ button {
   text-align: center;
 }
 
-.type-text .done    { color: var(--green); }
-.type-text .wrong   { color: #fff; background: var(--red); border-radius: 6px; }
+.type-text .done { color: var(--green); }
+/* A missed character: marked, but the cursor has already moved on. */
+.type-text .miss {
+  color: #c0392b;
+  background: #ffe3e3;
+  border-radius: 6px;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
 .type-text .current {
   background: var(--yellow);
   border-radius: 6px;
@@ -471,7 +478,7 @@ body.calm {
 body.calm .logo { animation: none; color: #5b6b9e; text-shadow: 2px 2px 0 #fff; }
 body.calm .type-text .current,
 body.calm .key.target { animation: none; }
-body.calm .type-text .wrong { background: #ffe3c2; color: inherit; }
+body.calm .type-text .miss { background: #ffe9cf; color: #8a5a2b; }
 body.calm .key.pressed-wrong { background: #e8b98a; color: var(--ink); }
 body.calm .menu-card:hover { transform: none; }
 body.calm .popup { animation: none; }

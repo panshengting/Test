@@ -20,8 +20,15 @@ python3 -m http.server 8000
 Ten built-in lessons practice real everyday communication: saying how you
 feel, asking for help, talking at school, with family, and out in the world.
 Typing is case-sensitive — capitals and punctuation must match — with a
-color-coded on-screen keyboard showing which finger to use. Each lesson
-earns 1–3 stars based on accuracy, and results show words per minute.
+color-coded on-screen keyboard showing which finger to use.
+
+**Mistakes never block.** A missed character is gently marked and the cursor
+keeps moving, so there is no getting stuck — Backspace steps back to fix a
+mark if wanted, though the miss still counts toward accuracy. Live WPM and
+accuracy are shown while typing, keystrokes make a pleasant soft typewriter
+click, and each finished line rings a little typewriter bell. Each lesson
+earns 1–3 stars based on accuracy, and practicing on consecutive days builds
+a 🔥 streak shown on the home screen.
 
 ### 📖 Story Time
 Type through whole stories, split automatically into comfortable lines.

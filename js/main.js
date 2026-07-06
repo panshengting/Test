@@ -10,6 +10,7 @@ const App = (() => {
     sound: true,
     name: "Sirui",
     calm: false,        // softer colors, no flashing/confetti, gentle sounds
+    streak: { count: 0, last: "" },  // consecutive practice days
   };
 
   let progress = load();
@@ -86,9 +87,22 @@ const App = (() => {
     return Object.values(progress.lessonStars).reduce((a, b) => a + b, 0);
   }
 
+  /* Called whenever a lesson, story, or game is finished. */
+  function recordPractice() {
+    const today = new Date().toLocaleDateString("en-CA");
+    const s = progress.streak;
+    if (s.last === today) return;
+    const yesterday = new Date(Date.now() - 86400000).toLocaleDateString("en-CA");
+    s.count = s.last === yesterday ? s.count + 1 : 1;
+    s.last = today;
+    save();
+  }
+
   function refreshHome() {
+    const streak = progress.streak.count > 0
+      ? ` · 🔥 ${progress.streak.count}-day streak` : "";
     document.getElementById("home-star-count").textContent =
-      `⭐ ${totalStars()} stars collected`;
+      `⭐ ${totalStars()} stars collected${streak}`;
     document.getElementById("tagline").textContent = progress.name
       ? `Hi ${progress.name}! Ready to type?`
       : "Learn to type with games and fun!";
@@ -157,6 +171,6 @@ const App = (() => {
 
   return {
     progress, save, goto, onEnter, onLeave, onKey,
-    showResult, hideResult, confetti, totalStars, applyCalm,
+    showResult, hideResult, confetti, totalStars, applyCalm, recordPractice,
   };
 })();

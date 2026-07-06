@@ -1,5 +1,7 @@
 /* Lesson & story lists + the shared typing screen.
-   Typing is case-sensitive: capitals and punctuation must match. */
+   Typing is case-sensitive, and mistakes never block: a missed character
+   is marked and the cursor keeps moving, so there is no getting stuck.
+   Backspace steps back to fix a mark if she wants to. */
 
 (() => {
   const textEl = () => document.getElementById("lesson-text");
@@ -12,10 +14,10 @@
   let origin = "lessons"; // screen to go back to
   let lineIdx = 0;
   let pos = 0;
-  let mistakes = 0;
-  let typedTotal = 0;
-  let wrongHere = false;
-  let startedAt = 0;
+  let flags = [];         // per position on this line: true=hit, false=miss
+  let mistakes = 0;       // cumulative wrong keystrokes this lesson
+  let typedTotal = 0;     // cumulative keystrokes this lesson
+  let startedAt = 0;      // set on the first keystroke
   let keyboardBuilt = false;
 
   function allLessons() {
@@ -57,7 +59,7 @@
     lineIdx = 0;
     mistakes = 0;
     typedTotal = 0;
-    startedAt = performance.now();
+    startedAt = 0;
     backBtn().dataset.goto = from;
     backBtn().textContent = from === "stories" ? "⬅ Stories" : "⬅ Lessons";
     startLine();
@@ -66,21 +68,40 @@
 
   function startLine() {
     pos = 0;
-    wrongHere = false;
+    flags = [];
     titleEl().textContent = `${lesson.emoji} ${lesson.name}`;
-    progressEl().textContent = `Line ${lineIdx + 1} / ${lesson.lines.length}`;
     render();
+    updateStats();
   }
 
   function line() { return lesson.lines[lineIdx]; }
 
+  function liveStats() {
+    const correct = typedTotal - mistakes;
+    const minutes = startedAt ? (performance.now() - startedAt) / 60000 : 0;
+    return {
+      wpm: minutes > 0 ? Math.round((correct / 5) / minutes) : 0,
+      accuracy: typedTotal > 0 ? Math.round((correct / typedTotal) * 100) : 100,
+    };
+  }
+
+  function updateStats() {
+    let txt = `Line ${lineIdx + 1} / ${lesson.lines.length}`;
+    if (typedTotal >= 5) {
+      const s = liveStats();
+      txt += ` · ${s.wpm} WPM · ${s.accuracy}%`;
+    }
+    progressEl().textContent = txt;
+  }
+
   function render() {
     const chars = line().split("").map((ch, i) => {
       const shown = Content.esc(ch);
-      if (i < pos) return `<span class="done">${shown}</span>`;
-      if (i === pos) {
-        const cls = wrongHere ? "current wrong" : "current";
-        return `<span class="${cls}">${shown}</span>`;
+      if (i === pos) return `<span class="current">${shown}</span>`;
+      if (i < pos) {
+        return flags[i]
+          ? `<span class="done">${shown}</span>`
+          : `<span class="miss">${shown}</span>`;
       }
       return `<span class="todo">${shown}</span>`;
     });
@@ -90,35 +111,46 @@
 
   function handleKey(e) {
     if (!lesson) return;
-    if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
-    e.preventDefault();
 
-    const want = line()[pos];
-    typedTotal++;
-
-    if (e.key === want) {
-      Keyboard.flash(want, true);
-      Sound.key();
-      pos++;
-      wrongHere = false;
-      if (pos >= line().length) {
-        finishLine();
-      } else {
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      if (pos > 0) {
+        pos--;
+        flags[pos] = undefined;
         render();
       }
+      return;
+    }
+
+    if (e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+    e.preventDefault();
+    if (!startedAt) startedAt = performance.now();
+
+    const want = line()[pos];
+    const ok = e.key === want;
+    typedTotal++;
+    if (ok) {
+      Sound.type();
     } else {
-      Keyboard.flash(e.key, false);
-      if (App.progress.calm) Sound.soft(); else Sound.wrong();
+      Sound.clunk();
       mistakes++;
-      wrongHere = true;
+    }
+    Keyboard.flash(ok ? want : e.key, ok);
+    flags[pos] = ok;
+    pos++;
+
+    if (pos >= line().length) {
+      finishLine();
+    } else {
       render();
+      updateStats();
     }
   }
 
   function finishLine() {
     lineIdx++;
     if (lineIdx < lesson.lines.length) {
-      Sound.pop();
+      Sound.ding();
       startLine();
     } else {
       finishLesson();
@@ -126,17 +158,13 @@
   }
 
   function finishLesson() {
-    const accuracy = typedTotal === 0 ? 100 :
-      Math.round(((typedTotal - mistakes) / typedTotal) * 100);
+    const { wpm, accuracy } = liveStats();
     const stars = accuracy >= 96 ? 3 : accuracy >= 88 ? 2 : 1;
-
-    const minutes = (performance.now() - startedAt) / 60000;
-    const chars = lesson.lines.join(" ").length;
-    const wpm = minutes > 0 ? Math.round((chars / 5) / minutes) : 0;
 
     const prev = App.progress.lessonStars[lesson.id] || 0;
     if (stars > prev) App.progress.lessonStars[lesson.id] = stars;
     if (wpm > App.progress.bestWpm) App.progress.bestWpm = wpm;
+    App.recordPractice();
     App.save();
 
     Sound.win();
@@ -147,7 +175,6 @@
     const finished = lesson;
     const from = origin;
     const items = list;
-    const backScreen = from;
     const listRefresh = from === "stories" ? renderStoryList : renderLessonList;
 
     App.showResult({
@@ -158,7 +185,7 @@
       again: () => start(finished, from, items),
       next: next
         ? () => start(next, from, items)
-        : () => { listRefresh(); App.goto(backScreen); },
+        : () => { listRefresh(); App.goto(from); },
     });
     lesson = null;
     Keyboard.clear();

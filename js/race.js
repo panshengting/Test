@@ -69,7 +69,7 @@
     e.preventDefault();
     const want = words[wordIdx][pos];
     if (e.key.toLowerCase() === want) {
-      Sound.key();
+      Sound.type();
       charsTyped++;
       pos++;
       if (pos >= words[wordIdx].length) {
@@ -83,7 +83,7 @@
         render();
       }
     } else {
-      Sound.wrong();
+      Sound.clunk();
     }
   }
 
@@ -116,8 +116,9 @@
 
     if (won && finalWpm > App.progress.bestWpm) {
       App.progress.bestWpm = finalWpm;
-      App.save();
     }
+    App.recordPractice();
+    App.save();
     if (won) { Sound.win(); App.confetti(60); } else { Sound.lose(); }
 
     const practice = cpuSeconds === 0;

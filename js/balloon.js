@@ -57,7 +57,7 @@
         b.el.remove();
         balloons.splice(i, 1);
         lives--;
-        Sound.wrong();
+        if (App.progress.calm) Sound.soft(); else Sound.wrong();
         hud();
         if (lives <= 0) return gameOver();
       }
@@ -104,10 +104,9 @@
 
   function gameOver() {
     const isHigh = score > App.progress.balloonHigh;
-    if (isHigh) {
-      App.progress.balloonHigh = score;
-      App.save();
-    }
+    if (isHigh) App.progress.balloonHigh = score;
+    App.recordPractice();
+    App.save();
     stop();
     if (isHigh && score > 0) { Sound.win(); App.confetti(40); } else { Sound.lose(); }
     App.showResult({
