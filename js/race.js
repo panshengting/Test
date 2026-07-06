@@ -8,8 +8,8 @@
   const cpuEl = () => document.getElementById("racer-cpu");
 
   const TOTAL_WORDS = 10;
-  const CPU_SECONDS = 55;   // how long the UFO takes to finish
 
+  let cpuSeconds = 55;     // how long the UFO takes to finish; 0 = parked (practice)
   let running = false;
   let words = [];
   let wordIdx = 0;
@@ -53,11 +53,13 @@
 
   function loop() {
     if (!running) return;
-    const elapsed = (performance.now() - startTime) / 1000;
-    const cpuFrac = Math.min(elapsed / CPU_SECONDS, 1);
-    cpuEl().style.left = cpuFrac * laneWidth(cpuEl()) + "px";
+    if (cpuSeconds > 0) {
+      const elapsed = (performance.now() - startTime) / 1000;
+      const cpuFrac = Math.min(elapsed / cpuSeconds, 1);
+      cpuEl().style.left = cpuFrac * laneWidth(cpuEl()) + "px";
+      if (cpuFrac >= 1) return finish(false);
+    }
     wpmEl().textContent = charsTyped > 0 ? `${wpm()} WPM` : "";
-    if (cpuFrac >= 1) return finish(false);
     rafId = requestAnimationFrame(loop);
   }
 
@@ -118,12 +120,13 @@
     }
     if (won) { Sound.win(); App.confetti(60); } else { Sound.lose(); }
 
+    const practice = cpuSeconds === 0;
     App.showResult({
       emoji: won ? "🚀" : "🛸",
-      title: won ? "You win the race!" : "The UFO got there first!",
+      title: practice ? "All words done!" : won ? "You win the race!" : "The UFO got there first!",
       detail: won
-        ? `Amazing! You typed ${finalWpm} words per minute.`
-        : "Keep practicing — you'll beat it next time!",
+        ? `Nice flying! You typed ${finalWpm} words per minute.`
+        : "That is okay — every race makes you faster. Try again when you are ready.",
       again: start,
     });
     overlay().classList.remove("hidden");
@@ -135,6 +138,11 @@
   App.onKey("race", handleKey);
 
   document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("btn-race-start").addEventListener("click", start);
+    document.querySelectorAll(".race-diff").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        cpuSeconds = Number(btn.dataset.cpu);
+        start();
+      });
+    });
   });
 })();

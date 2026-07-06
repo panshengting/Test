@@ -1,45 +1,65 @@
-/* Lesson list + lesson play mode. */
+/* Lesson & story lists + the shared typing screen.
+   Typing is case-sensitive: capitals and punctuation must match. */
 
 (() => {
-  const listEl = () => document.getElementById("lesson-list");
   const textEl = () => document.getElementById("lesson-text");
   const titleEl = () => document.getElementById("lesson-title");
   const progressEl = () => document.getElementById("lesson-progress");
+  const backBtn = () => document.getElementById("lesson-back");
 
-  let lesson = null;      // current lesson object
-  let lineIdx = 0;        // which line of the lesson
-  let pos = 0;            // position within the line
+  let lesson = null;      // current lesson/story object
+  let list = [];          // the collection it came from (for Next)
+  let origin = "lessons"; // screen to go back to
+  let lineIdx = 0;
+  let pos = 0;
   let mistakes = 0;
   let typedTotal = 0;
-  let wrongHere = false;  // current char was missed at least once
+  let wrongHere = false;
+  let startedAt = 0;
   let keyboardBuilt = false;
 
-  /* ---------- Lesson list ---------- */
-  function renderList() {
-    const el = listEl();
+  function allLessons() {
+    return LESSONS.concat(Content.setsAsLessons());
+  }
+
+  /* ---------- Lists (lessons and stories share a look) ---------- */
+  function renderInto(el, items, from) {
     el.innerHTML = "";
-    LESSONS.forEach((l, i) => {
+    items.forEach((l, i) => {
       const stars = App.progress.lessonStars[l.id] || 0;
       const btn = document.createElement("button");
       btn.className = "lesson-item";
       btn.innerHTML = `
         <span class="lesson-emoji">${l.emoji}</span>
         <span>
-          <span class="lesson-name">${i + 1}. ${l.name}</span>
-          <span class="lesson-keys">Keys: ${l.keys}</span>
+          <span class="lesson-name">${i + 1}. ${Content.esc(l.name)}</span>
+          <span class="lesson-keys">${Content.esc(l.keys)}</span>
         </span>
         <span class="lesson-stars">${"⭐".repeat(stars) || "☆☆☆"}</span>`;
-      btn.addEventListener("click", () => start(l));
+      btn.addEventListener("click", () => start(l, from, items));
       el.appendChild(btn);
     });
   }
 
-  /* ---------- Lesson play ---------- */
-  function start(l) {
+  function renderLessonList() {
+    renderInto(document.getElementById("lesson-list"), allLessons(), "lessons");
+  }
+
+  function renderStoryList() {
+    renderInto(document.getElementById("story-list"), Content.allStories(), "stories");
+  }
+
+  /* ---------- Play ---------- */
+  function start(l, from, items) {
     lesson = l;
+    origin = from;
+    list = items;
     lineIdx = 0;
     mistakes = 0;
     typedTotal = 0;
+    startedAt = performance.now();
+    backBtn().dataset.goto = from;
+    backBtn().textContent = from === "stories" ? "⬅ Stories" : "⬅ Lessons";
     startLine();
     App.goto("lesson");
   }
@@ -56,7 +76,7 @@
 
   function render() {
     const chars = line().split("").map((ch, i) => {
-      const shown = ch === " " ? "&nbsp;" : ch;
+      const shown = Content.esc(ch);
       if (i < pos) return `<span class="done">${shown}</span>`;
       if (i === pos) {
         const cls = wrongHere ? "current wrong" : "current";
@@ -74,10 +94,9 @@
     e.preventDefault();
 
     const want = line()[pos];
-    const got = e.key.toLowerCase();
     typedTotal++;
 
-    if (got === want) {
+    if (e.key === want) {
       Keyboard.flash(want, true);
       Sound.key();
       pos++;
@@ -88,8 +107,8 @@
         render();
       }
     } else {
-      Keyboard.flash(got, false);
-      Sound.wrong();
+      Keyboard.flash(e.key, false);
+      if (App.progress.calm) Sound.soft(); else Sound.wrong();
       mistakes++;
       wrongHere = true;
       render();
@@ -109,37 +128,45 @@
   function finishLesson() {
     const accuracy = typedTotal === 0 ? 100 :
       Math.round(((typedTotal - mistakes) / typedTotal) * 100);
-    const stars = accuracy >= 95 ? 3 : accuracy >= 85 ? 2 : 1;
+    const stars = accuracy >= 96 ? 3 : accuracy >= 88 ? 2 : 1;
+
+    const minutes = (performance.now() - startedAt) / 60000;
+    const chars = lesson.lines.join(" ").length;
+    const wpm = minutes > 0 ? Math.round((chars / 5) / minutes) : 0;
 
     const prev = App.progress.lessonStars[lesson.id] || 0;
-    if (stars > prev) {
-      App.progress.lessonStars[lesson.id] = stars;
-      App.save();
-    }
+    if (stars > prev) App.progress.lessonStars[lesson.id] = stars;
+    if (wpm > App.progress.bestWpm) App.progress.bestWpm = wpm;
+    App.save();
 
     Sound.win();
     App.confetti(stars * 30);
 
-    const idx = LESSONS.indexOf(lesson);
-    const nextLesson = LESSONS[idx + 1];
+    const idx = list.indexOf(lesson);
+    const next = list[idx + 1];
     const finished = lesson;
+    const from = origin;
+    const items = list;
+    const backScreen = from;
+    const listRefresh = from === "stories" ? renderStoryList : renderLessonList;
 
     App.showResult({
       emoji: stars === 3 ? "🌟" : "🎉",
       title: stars === 3 ? "Perfect!" : "Great job!",
       stars,
-      detail: `You typed with ${accuracy}% accuracy!`,
-      again: () => start(finished),
-      next: nextLesson
-        ? () => start(nextLesson)
-        : () => { renderList(); App.goto("lessons"); },
+      detail: `${accuracy}% accuracy at ${wpm} words per minute.`,
+      again: () => start(finished, from, items),
+      next: next
+        ? () => start(next, from, items)
+        : () => { listRefresh(); App.goto(backScreen); },
     });
     lesson = null;
     Keyboard.clear();
   }
 
   /* ---------- Wire up ---------- */
-  App.onEnter("lessons", renderList);
+  App.onEnter("lessons", renderLessonList);
+  App.onEnter("stories", renderStoryList);
   App.onEnter("lesson", () => {
     if (!keyboardBuilt) {
       Keyboard.build(document.getElementById("keyboard"));

@@ -87,6 +87,7 @@ button {
 .menu-card:active { transform: translateY(0) scale(0.98); }
 
 .card-learn   { border-color: var(--blue); }
+.card-story   { border-color: var(--purple); }
 .card-balloon { border-color: var(--pink); }
 .card-race    { border-color: var(--orange); }
 .card-stats   { border-color: var(--green); }
@@ -102,7 +103,10 @@ button {
   align-items: center;
   padding: 16px 4px;
   font-size: 1.1rem;
+  flex-wrap: wrap;
+  gap: 10px;
 }
+.footer-btns { display: flex; gap: 10px; flex-wrap: wrap; }
 
 /* ============ Shared bits ============ */
 .top-bar {
@@ -178,10 +182,11 @@ button {
 
 .type-text {
   font-family: "Courier New", monospace;
-  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  font-size: clamp(1.35rem, 3.2vw, 2rem);
   letter-spacing: 2px;
-  line-height: 1.6;
-  word-break: break-all;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   text-align: center;
 }
 
@@ -376,6 +381,100 @@ button {
 }
 .race-word .done { color: var(--green); }
 .race-word .current { background: var(--yellow); border-radius: 6px; }
+
+.difficulty-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.difficulty-row .big-btn { font-size: 1.05rem; padding: 12px 20px; }
+.overlay-note { font-size: 0.95rem; color: var(--ink-soft); }
+
+/* ============ For Grown-Ups ============ */
+.parent-intro {
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  max-width: 720px;
+}
+
+.parent-section {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px 24px;
+  margin-bottom: 20px;
+}
+.parent-section h3 { margin-bottom: 12px; font-size: 1.25rem; }
+.section-note { color: var(--ink-soft); font-size: 0.95rem; margin-bottom: 10px; line-height: 1.5; }
+
+.parent-section form { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.parent-section input[type="text"],
+.parent-section textarea {
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 2px solid #d7dfe8;
+  background: #fbfdff;
+  resize: vertical;
+}
+.parent-section input[type="text"]:focus,
+.parent-section textarea:focus { outline: none; border-color: var(--blue); }
+
+.settings-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.settings-row input { max-width: 220px; }
+label.check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 14px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+label.check input { margin-top: 4px; width: 18px; height: 18px; }
+
+.form-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.form-actions .big-btn { font-size: 1.05rem; padding: 12px 24px; }
+.form-actions .hidden { display: none; }
+
+.custom-list { margin-bottom: 6px; }
+.custom-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px dashed #e2e8f0;
+  flex-wrap: wrap;
+}
+.custom-item .ci-name { flex: 1; font-weight: bold; min-width: 140px; }
+.custom-item .ci-detail { color: var(--ink-soft); font-size: 0.9rem; }
+.icon-btn {
+  background: #f0f4f8;
+  border-radius: 10px;
+  padding: 7px 12px;
+  font-size: 0.95rem;
+  transition: transform 0.1s ease;
+}
+.icon-btn:hover { transform: scale(1.05); background: #e4ebf3; }
+
+/* ============ Calm mode ============ */
+body.calm {
+  --bg-top: #dfe9f2;
+  --bg-bottom: #e9efe6;
+  --yellow: #f3e6b3;
+  --pink: #d98ba6;
+  --orange: #e0a86a;
+}
+body.calm .logo { animation: none; color: #5b6b9e; text-shadow: 2px 2px 0 #fff; }
+body.calm .type-text .current,
+body.calm .key.target { animation: none; }
+body.calm .type-text .wrong { background: #ffe3c2; color: inherit; }
+body.calm .key.pressed-wrong { background: #e8b98a; color: var(--ink); }
+body.calm .menu-card:hover { transform: none; }
+body.calm .popup { animation: none; }
 
 /* ============ Stats ============ */
 .stats-grid {

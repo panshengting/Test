@@ -13,14 +13,19 @@
   <section id="screen-home" class="screen active">
     <header class="hero">
       <h1 class="logo">⭐ Typing Stars ⭐</h1>
-      <p class="tagline">Learn to type with games and fun!</p>
+      <p class="tagline" id="tagline">Learn to type with games and fun!</p>
     </header>
 
     <div class="menu-grid">
       <button class="menu-card card-learn" data-goto="lessons">
         <span class="menu-emoji">📚</span>
-        <span class="menu-title">Learn</span>
-        <span class="menu-sub">Step-by-step lessons</span>
+        <span class="menu-title">Lessons</span>
+        <span class="menu-sub">Sentences for every day</span>
+      </button>
+      <button class="menu-card card-story" data-goto="stories">
+        <span class="menu-emoji">📖</span>
+        <span class="menu-title">Story Time</span>
+        <span class="menu-sub">Type your way through a story</span>
       </button>
       <button class="menu-card card-balloon" data-goto="balloon">
         <span class="menu-emoji">🎈</span>
@@ -30,7 +35,7 @@
       <button class="menu-card card-race" data-goto="race">
         <span class="menu-emoji">🚀</span>
         <span class="menu-title">Rocket Race</span>
-        <span class="menu-sub">Type words to win the race!</span>
+        <span class="menu-sub">Type words to fly your rocket</span>
       </button>
       <button class="menu-card card-stats" data-goto="stats">
         <span class="menu-emoji">🏆</span>
@@ -41,7 +46,10 @@
 
     <footer class="home-footer">
       <span id="home-star-count">⭐ 0 stars collected</span>
-      <button id="btn-sound" class="pill-btn" title="Toggle sound">🔊 Sound On</button>
+      <span class="footer-btns">
+        <button id="btn-sound" class="pill-btn" title="Toggle sound">🔊 Sound On</button>
+        <button class="pill-btn" data-goto="parent">⚙️ For Grown-Ups</button>
+      </span>
     </footer>
   </section>
 
@@ -55,10 +63,20 @@
     <div id="lesson-list" class="lesson-list"></div>
   </section>
 
-  <!-- ============ LESSON PLAY ============ -->
+  <!-- ============ STORY LIST ============ -->
+  <section id="screen-stories" class="screen">
+    <div class="top-bar">
+      <button class="pill-btn back-btn" data-goto="home">⬅ Home</button>
+      <h2>📖 Story Time</h2>
+      <span class="top-bar-spacer"></span>
+    </div>
+    <div id="story-list" class="lesson-list"></div>
+  </section>
+
+  <!-- ============ LESSON / STORY PLAY ============ -->
   <section id="screen-lesson" class="screen">
     <div class="top-bar">
-      <button class="pill-btn back-btn" data-goto="lessons">⬅ Lessons</button>
+      <button id="lesson-back" class="pill-btn back-btn" data-goto="lessons">⬅ Lessons</button>
       <h2 id="lesson-title">Lesson</h2>
       <span class="lesson-progress" id="lesson-progress">Line 1 / 3</span>
     </div>
@@ -120,8 +138,14 @@
       <div id="race-word" class="race-word"></div>
       <div id="race-start" class="game-overlay">
         <p class="overlay-emoji">🚀</p>
-        <p>Type each word to blast your rocket forward.<br>Beat the UFO to the finish line!</p>
-        <button id="btn-race-start" class="big-btn">Blast Off!</button>
+        <p>Type each word to fly your rocket forward.<br>Pick how you want to play:</p>
+        <div class="difficulty-row">
+          <button class="big-btn race-diff" data-cpu="0">🧘 Just Practice</button>
+          <button class="big-btn race-diff" data-cpu="80">🐢 Relaxed</button>
+          <button class="big-btn alt race-diff" data-cpu="55">🙂 Normal</button>
+          <button class="big-btn race-diff" data-cpu="35">⚡ Speedy</button>
+        </div>
+        <p class="overlay-note">In Just Practice, the UFO stays parked — no rush at all.</p>
       </div>
     </div>
   </section>
@@ -142,7 +166,7 @@
       <div class="stat-card">
         <span class="stat-emoji">📚</span>
         <span class="stat-value" id="stat-lessons">0</span>
-        <span class="stat-label">Lessons finished</span>
+        <span class="stat-label">Lessons and stories finished</span>
       </div>
       <div class="stat-card">
         <span class="stat-emoji">🎈</span>
@@ -153,6 +177,70 @@
         <span class="stat-emoji">🚀</span>
         <span class="stat-value" id="stat-wpm">0</span>
         <span class="stat-label">Best words per minute</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOR GROWN-UPS ============ -->
+  <section id="screen-parent" class="screen">
+    <div class="top-bar">
+      <button class="pill-btn back-btn" data-goto="home">⬅ Home</button>
+      <h2>⚙️ For Grown-Ups</h2>
+      <span class="top-bar-spacer"></span>
+    </div>
+
+    <p class="parent-intro">
+      Add your own stories and sentence sets here — stories appear in
+      <strong>Story Time</strong> and sentence sets appear at the end of
+      <strong>Lessons</strong>, marked with ✏️. Everything is saved in this
+      browser; use Backup to keep a copy or move it to another device.
+    </p>
+
+    <div class="parent-section">
+      <h3>👧 Player Settings</h3>
+      <div class="settings-row">
+        <label for="setting-name">Name:</label>
+        <input id="setting-name" type="text" maxlength="20">
+      </div>
+      <label class="check">
+        <input id="setting-calm" type="checkbox">
+        Calm mode — softer colors, no flashing or confetti, gentler sounds when a key is missed
+      </label>
+    </div>
+
+    <div class="parent-section">
+      <h3>💬 My Sentence Sets</h3>
+      <div id="custom-sets" class="custom-list"></div>
+      <form id="form-set">
+        <input id="set-title" type="text" placeholder="Set name — for example: Ordering food" required>
+        <textarea id="set-lines" rows="4" placeholder="One sentence per line, for example:&#10;Can I have noodles for dinner, please?&#10;I would like some water." required></textarea>
+        <div class="form-actions">
+          <button type="submit" id="set-submit" class="big-btn">Add Sentence Set</button>
+          <button type="button" id="set-cancel" class="pill-btn hidden">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="parent-section">
+      <h3>📖 My Stories</h3>
+      <div id="custom-stories" class="custom-list"></div>
+      <form id="form-story">
+        <input id="story-title" type="text" placeholder="Story title" required>
+        <textarea id="story-text" rows="7" placeholder="Write or paste the story here. It will be split into comfortable lines automatically." required></textarea>
+        <div class="form-actions">
+          <button type="submit" id="story-submit" class="big-btn">Add Story</button>
+          <button type="button" id="story-cancel" class="pill-btn hidden">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="parent-section">
+      <h3>💾 Backup</h3>
+      <p class="section-note">Download all custom content as a file, or load a file you saved before. Importing replaces the current custom content.</p>
+      <div class="form-actions">
+        <button id="btn-export" class="pill-btn">⬇ Save backup file</button>
+        <button id="btn-import" class="pill-btn">⬆ Load backup file</button>
+        <input id="import-file" type="file" accept=".json,application/json" hidden>
       </div>
     </div>
   </section>
@@ -173,10 +261,12 @@
 
   <script src="js/audio.js"></script>
   <script src="js/data.js"></script>
+  <script src="js/content.js"></script>
   <script src="js/keyboard.js"></script>
   <script src="js/main.js"></script>
   <script src="js/lesson.js"></script>
   <script src="js/balloon.js"></script>
   <script src="js/race.js"></script>
+  <script src="js/parent.js"></script>
 </body>
 </html>

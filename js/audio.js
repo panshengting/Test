@@ -34,6 +34,7 @@ const Sound = (() => {
     key()   { tone(660, 0.06, "square", 0.05); },
     pop()   { tone(880, 0.09, "triangle", 0.2); tone(1320, 0.07, "sine", 0.1, 0.03); },
     wrong() { tone(160, 0.18, "sawtooth", 0.12); },
+    soft()  { tone(320, 0.1, "sine", 0.05); },  /* gentle miss sound for calm mode */
     win()   { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.18, "triangle", 0.18, i * 0.13)); },
     lose()  { [392, 330, 262].forEach((f, i) => tone(f, 0.22, "triangle", 0.15, i * 0.16)); },
   };

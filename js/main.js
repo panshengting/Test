@@ -8,6 +8,8 @@ const App = (() => {
     balloonHigh: 0,
     bestWpm: 0,
     sound: true,
+    name: "Sirui",
+    calm: false,        // softer colors, no flashing/confetti, gentle sounds
   };
 
   let progress = load();
@@ -65,6 +67,7 @@ const App = (() => {
 
   /* ---------- Confetti ---------- */
   function confetti(count = 60) {
+    if (progress.calm) return;
     const colors = ["#ff6f9c", "#3aa5ff", "#4ecb71", "#ffa53c", "#8e6bf2", "#ffd93c"];
     for (let i = 0; i < count; i++) {
       const piece = document.createElement("div");
@@ -86,6 +89,13 @@ const App = (() => {
   function refreshHome() {
     document.getElementById("home-star-count").textContent =
       `⭐ ${totalStars()} stars collected`;
+    document.getElementById("tagline").textContent = progress.name
+      ? `Hi ${progress.name}! Ready to type?`
+      : "Learn to type with games and fun!";
+  }
+
+  function applyCalm() {
+    document.body.classList.toggle("calm", !!progress.calm);
   }
 
   function refreshStats() {
@@ -139,6 +149,7 @@ const App = (() => {
 
     onEnter("home", refreshHome);
     onEnter("stats", refreshStats);
+    applyCalm();
     refreshHome();
   }
 
@@ -146,6 +157,6 @@ const App = (() => {
 
   return {
     progress, save, goto, onEnter, onLeave, onKey,
-    showResult, hideResult, confetti, totalStars,
+    showResult, hideResult, confetti, totalStars, applyCalm,
   };
 })();

@@ -42,14 +42,22 @@ const Keyboard = (() => {
     container.appendChild(spaceRow);
   }
 
+  /* Map a target character to the physical key that produces it,
+     so capitals and shifted punctuation still light up a key. */
+  function baseKey(ch) {
+    if (!ch) return ch;
+    const shifted = { "?": "/", ":": ";", "<": ",", ">": "." };
+    return shifted[ch] || ch.toLowerCase();
+  }
+
   function highlight(ch) {
     Object.values(keyEls).forEach((el) => el.classList.remove("target"));
-    const el = keyEls[ch];
+    const el = keyEls[baseKey(ch)];
     if (el) el.classList.add("target");
   }
 
   function flash(ch, ok) {
-    const el = keyEls[ch];
+    const el = keyEls[baseKey(ch)];
     if (!el) return;
     const cls = ok ? "pressed" : "pressed-wrong";
     el.classList.add(cls);
