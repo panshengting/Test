@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Stars — Fun Typing for Kids</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
+</head>
+<body>
+
+  <!-- ============ HOME ============ -->
+  <section id="screen-home" class="screen active">
+    <header class="hero">
+      <h1 class="logo">⭐ Typing Stars ⭐</h1>
+      <p class="tagline">Learn to type with games and fun!</p>
+    </header>
+
+    <div class="menu-grid">
+      <button class="menu-card card-learn" data-goto="lessons">
+        <span class="menu-emoji">📚</span>
+        <span class="menu-title">Learn</span>
+        <span class="menu-sub">Step-by-step lessons</span>
+      </button>
+      <button class="menu-card card-balloon" data-goto="balloon">
+        <span class="menu-emoji">🎈</span>
+        <span class="menu-title">Balloon Pop</span>
+        <span class="menu-sub">Pop the falling letters!</span>
+      </button>
+      <button class="menu-card card-race" data-goto="race">
+        <span class="menu-emoji">🚀</span>
+        <span class="menu-title">Rocket Race</span>
+        <span class="menu-sub">Type words to win the race!</span>
+      </button>
+      <button class="menu-card card-stats" data-goto="stats">
+        <span class="menu-emoji">🏆</span>
+        <span class="menu-title">My Trophies</span>
+        <span class="menu-sub">See your stars and scores</span>
+      </button>
+    </div>
+
+    <footer class="home-footer">
+      <span id="home-star-count">⭐ 0 stars collected</span>
+      <button id="btn-sound" class="pill-btn" title="Toggle sound">🔊 Sound On</button>
+    </footer>
+  </section>
+
+  <!-- ============ LESSON LIST ============ -->
+  <section id="screen-lessons" class="screen">
+    <div class="top-bar">
+      <button class="pill-btn back-btn" data-goto="home">⬅ Home</button>
+      <h2>📚 Lessons</h2>
+      <span class="top-bar-spacer"></span>
+    </div>
+    <div id="lesson-list" class="lesson-list"></div>
+  </section>
+
+  <!-- ============ LESSON PLAY ============ -->
+  <section id="screen-lesson" class="screen">
+    <div class="top-bar">
+      <button class="pill-btn back-btn" data-goto="lessons">⬅ Lessons</button>
+      <h2 id="lesson-title">Lesson</h2>
+      <span class="lesson-progress" id="lesson-progress">Line 1 / 3</span>
+    </div>
+
+    <div class="type-area">
+      <div id="lesson-text" class="type-text" aria-live="polite"></div>
+    </div>
+
+    <div id="keyboard" class="keyboard"></div>
+
+    <div class="hands-hint">
+      <span class="finger-dot f-pinky"></span> Pinky
+      <span class="finger-dot f-ring"></span> Ring
+      <span class="finger-dot f-middle"></span> Middle
+      <span class="finger-dot f-index"></span> Pointer
+      <span class="finger-dot f-thumb"></span> Thumb
+    </div>
+  </section>
+
+  <!-- ============ BALLOON POP ============ -->
+  <section id="screen-balloon" class="screen">
+    <div class="top-bar">
+      <button class="pill-btn back-btn" data-goto="home">⬅ Home</button>
+      <h2>🎈 Balloon Pop</h2>
+      <div class="game-hud">
+        <span id="balloon-score">Score: 0</span>
+        <span id="balloon-lives">❤️❤️❤️</span>
+      </div>
+    </div>
+    <div id="balloon-sky" class="balloon-sky">
+      <div id="balloon-start" class="game-overlay">
+        <p class="overlay-emoji">🎈</p>
+        <p>Type the letter on each balloon to pop it<br>before it reaches the ground!</p>
+        <button id="btn-balloon-start" class="big-btn">Start!</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ROCKET RACE ============ -->
+  <section id="screen-race" class="screen">
+    <div class="top-bar">
+      <button class="pill-btn back-btn" data-goto="home">⬅ Home</button>
+      <h2>🚀 Rocket Race</h2>
+      <span id="race-wpm" class="lesson-progress"></span>
+    </div>
+
+    <div class="race-track">
+      <div class="race-lane">
+        <div id="racer-player" class="racer">🚀</div>
+        <div class="finish-flag">🏁</div>
+      </div>
+      <div class="race-lane">
+        <div id="racer-cpu" class="racer">🛸</div>
+        <div class="finish-flag">🏁</div>
+      </div>
+    </div>
+
+    <div class="race-word-area">
+      <div id="race-word" class="race-word"></div>
+      <div id="race-start" class="game-overlay">
+        <p class="overlay-emoji">🚀</p>
+        <p>Type each word to blast your rocket forward.<br>Beat the UFO to the finish line!</p>
+        <button id="btn-race-start" class="big-btn">Blast Off!</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STATS ============ -->
+  <section id="screen-stats" class="screen">
+    <div class="top-bar">
+      <button class="pill-btn back-btn" data-goto="home">⬅ Home</button>
+      <h2>🏆 My Trophies</h2>
+      <span class="top-bar-spacer"></span>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-emoji">⭐</span>
+        <span class="stat-value" id="stat-stars">0</span>
+        <span class="stat-label">Stars collected</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-emoji">📚</span>
+        <span class="stat-value" id="stat-lessons">0</span>
+        <span class="stat-label">Lessons finished</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-emoji">🎈</span>
+        <span class="stat-value" id="stat-balloon">0</span>
+        <span class="stat-label">Balloon high score</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-emoji">🚀</span>
+        <span class="stat-value" id="stat-wpm">0</span>
+        <span class="stat-label">Best words per minute</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULT POPUP ============ -->
+  <div id="result-popup" class="popup-backdrop hidden">
+    <div class="popup">
+      <div id="result-emoji" class="popup-emoji">🎉</div>
+      <h2 id="result-title">Great job!</h2>
+      <div id="result-stars" class="popup-stars"></div>
+      <p id="result-detail"></p>
+      <div class="popup-actions">
+        <button id="result-again" class="big-btn">Play Again 🔁</button>
+        <button id="result-next" class="big-btn alt">Next ➡</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/audio.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/keyboard.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/lesson.js"></script>
+  <script src="js/balloon.js"></script>
+  <script src="js/race.js"></script>
+</body>
+</html>
