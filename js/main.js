@@ -10,6 +10,7 @@ const App = (() => {
     sound: true,
     name: "Sirui",
     calm: false,        // softer colors, no flashing/confetti, gentle sounds
+    speak: true,        // read each word aloud after it is typed
     streak: { count: 0, last: "" },  // consecutive practice days
   };
 

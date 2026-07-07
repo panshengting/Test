@@ -74,6 +74,7 @@
       pos++;
       if (pos >= words[wordIdx].length) {
         Sound.pop();
+        if (App.progress.speak) Sound.say(words[wordIdx]);
         wordIdx++;
         pos = 0;
         movePlayer();

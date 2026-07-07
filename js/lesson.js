@@ -138,6 +138,7 @@
     Keyboard.flash(ok ? want : e.key, ok);
     flags[pos] = ok;
     pos++;
+    speakFinishedWord();
 
     if (pos >= line().length) {
       finishLine();
@@ -145,6 +146,17 @@
       render();
       updateStats();
     }
+  }
+
+  /* If the cursor just passed the end of a word, read that word aloud. */
+  function speakFinishedWord() {
+    if (!App.progress.speak) return;
+    const l = line();
+    if (pos < l.length && l[pos - 1] !== " ") return;
+    const end = l[pos - 1] === " " ? pos - 1 : pos;
+    const startIdx = l.lastIndexOf(" ", end - 1) + 1;
+    const word = l.slice(startIdx, end).replace(/[^a-zA-Z']/g, "");
+    if (word) Sound.say(word);
   }
 
   function finishLine() {

@@ -80,6 +80,7 @@
     setTimeout(() => b.el.remove(), 260);
     score += 10;
     Sound.pop();
+    if (App.progress.speak) Sound.say(b.letter);
     hud();
   }
 

@@ -117,6 +117,12 @@
       App.save();
       App.applyCalm();
     });
+    const speakInput = $("setting-speak");
+    speakInput.addEventListener("change", () => {
+      App.progress.speak = speakInput.checked;
+      App.save();
+      if (speakInput.checked) Sound.say("Hello!"); // instant preview of the voice
+    });
 
     /* Sentence set form */
     $("form-set").addEventListener("submit", (e) => {
@@ -171,6 +177,7 @@
     App.onEnter("parent", () => {
       nameInput.value = App.progress.name || "";
       calmInput.checked = !!App.progress.calm;
+      $("setting-speak").checked = !!App.progress.speak;
       renderSets();
       renderStories();
     });

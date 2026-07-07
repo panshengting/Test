@@ -58,9 +58,24 @@ const Sound = (() => {
     tone(165, 0.035, "sine", vol * 0.45); // low thump for body
   }
 
+  /* Read a word aloud with the browser's built-in text-to-speech.
+     Any word still being spoken is cancelled first, so fast typing
+     always hears the newest word instead of building up a backlog. */
+  function say(text) {
+    if (!enabled || !("speechSynthesis" in window)) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-US";
+      u.rate = 0.9;
+      speechSynthesis.speak(u);
+    } catch {}
+  }
+
   return {
     get enabled() { return enabled; },
     set enabled(v) { enabled = v; },
+    say,
     /* typewriter keystroke */
     type()  { click(2600, 0.32); },
     /* duller clunk for a missed key — noticeable, never harsh */

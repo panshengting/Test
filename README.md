@@ -26,7 +26,9 @@ color-coded on-screen keyboard showing which finger to use.
 keeps moving, so there is no getting stuck — Backspace steps back to fix a
 mark if wanted, though the miss still counts toward accuracy. Live WPM and
 accuracy are shown while typing, keystrokes make a pleasant soft typewriter
-click, and each finished line rings a little typewriter bell. Each lesson
+click, and each finished line rings a little typewriter bell. **Each word is
+read aloud right after it is typed** (browser text-to-speech, toggleable in
+For Grown-Ups) — connecting the typed word to its spoken sound. Each lesson
 earns 1–3 stars based on accuracy, and practicing on consecutive days builds
 a 🔥 streak shown on the home screen.
 
